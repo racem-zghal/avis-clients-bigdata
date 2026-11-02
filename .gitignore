@@ -1,0 +1,10 @@
+*.csv
+*.json
+*.parquet
+*.archive
+*.zip
+__pycache__/
+metastore_db/
+metastore_db/
+spark-warehouse/
+derby.log

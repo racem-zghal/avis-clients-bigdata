@@ -1,0 +1,77 @@
+26/11/02 15:07:12 WARN streaming.StreamJob: -file option is deprecated, please use generic option -files instead.
+26/11/02 15:07:12 INFO client.RMProxy: Connecting to ResourceManager at hadoop-master/172.18.0.2:8032
+26/11/02 15:07:12 INFO client.RMProxy: Connecting to ResourceManager at hadoop-master/172.18.0.2:8032
+26/11/02 15:07:12 INFO mapred.FileInputFormat: Total input paths to process : 4
+26/11/02 15:07:12 INFO mapreduce.JobSubmitter: number of splits:4
+26/11/02 15:07:12 INFO mapreduce.JobSubmitter: Submitting tokens for job: job_1793629123734_0004
+26/11/02 15:07:12 INFO impl.YarnClientImpl: Submitted application application_1793629123734_0004
+26/11/02 15:07:12 INFO mapreduce.Job: The url to track the job: http://hadoop-master:8088/proxy/application_1793629123734_0004/
+26/11/02 15:07:12 INFO mapreduce.Job: Running job: job_1793629123734_0004
+26/11/02 15:07:16 INFO mapreduce.Job: Job job_1793629123734_0004 running in uber mode : false
+26/11/02 15:07:16 INFO mapreduce.Job:  map 0% reduce 0%
+26/11/02 15:07:25 INFO mapreduce.Job:  map 46% reduce 0%
+26/11/02 15:07:28 INFO mapreduce.Job:  map 67% reduce 0%
+26/11/02 15:07:29 INFO mapreduce.Job:  map 100% reduce 0%
+26/11/02 15:07:32 INFO mapreduce.Job:  map 100% reduce 100%
+26/11/02 15:07:32 INFO mapreduce.Job: Job job_1793629123734_0004 completed successfully
+26/11/02 15:07:33 INFO mapreduce.Job: Counters: 49
+	File System Counters
+		FILE: Number of bytes read=9925246
+		FILE: Number of bytes written=15492611
+		FILE: Number of read operations=0
+		FILE: Number of large read operations=0
+		FILE: Number of write operations=0
+		HDFS: Number of bytes read=238582084
+		HDFS: Number of bytes written=1309886
+		HDFS: Number of read operations=15
+		HDFS: Number of large read operations=0
+		HDFS: Number of write operations=2
+	Job Counters 
+		Launched map tasks=4
+		Launched reduce tasks=1
+		Data-local map tasks=4
+		Total time spent by all maps in occupied slots (ms)=43695
+		Total time spent by all reduces in occupied slots (ms)=1369
+		Total time spent by all map tasks (ms)=43695
+		Total time spent by all reduce tasks (ms)=1369
+		Total vcore-milliseconds taken by all map tasks=43695
+		Total vcore-milliseconds taken by all reduce tasks=1369
+		Total megabyte-milliseconds taken by all map tasks=44743680
+		Total megabyte-milliseconds taken by all reduce tasks=1401856
+	Map-Reduce Framework
+		Map input records=567118
+		Map output records=23442332
+		Map output bytes=201728938
+		Map output materialized bytes=4962620
+		Input split bytes=640
+		Combine input records=23442332
+		Combine output records=389901
+		Reduce input groups=118691
+		Reduce shuffle bytes=4962620
+		Reduce input records=389901
+		Reduce output records=118691
+		Spilled Records=1169703
+		Shuffled Maps =4
+		Failed Shuffles=0
+		Merged Map outputs=4
+		GC time elapsed (ms)=178
+		CPU time spent (ms)=48090
+		Physical memory (bytes) snapshot=1318359040
+		Virtual memory (bytes) snapshot=10118606848
+		Total committed heap usage (bytes)=936378368
+	Shuffle Errors
+		BAD_ID=0
+		CONNECTION=0
+		IO_ERROR=0
+		WRONG_LENGTH=0
+		WRONG_MAP=0
+		WRONG_REDUCE=0
+	File Input Format Counters 
+		Bytes Read=238581444
+	File Output Format Counters 
+		Bytes Written=1309886
+26/11/02 15:07:33 INFO streaming.StreamJob: Output directory: /projet/reviews/wc_mr_combiner2
+
+real	0m21.535s
+user	0m2.176s
+sys	0m0.382s
