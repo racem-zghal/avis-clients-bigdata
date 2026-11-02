@@ -254,13 +254,3 @@ La partie MongoDB se déroule ensuite dans un second terminal :
 ```
 docker exec -it mongo-avis mongosh avis --quiet
 ```
-
-## Équipe
-
-| Membre | Responsabilités principales |
-|---|---|
-| Prénom Nom | Environnement, HDFS, nettoyage |
-| Prénom Nom | MapReduce, Spark, index inversé |
-| Prénom Nom | Modèle, MongoDB, démonstration |
-
-Chaque membre a exécuté et compris l'ensemble du pipeline.
