@@ -1,6 +1,6 @@
 # Analyse d'avis clients : un pipeline Big Data
 
-Mini-projet du module Big Data (ENSI, II3). Une chaîne complète de stockage, de traitement et d'interrogation de 568 454 avis clients Amazon, construite avec HDFS, MapReduce, Spark, Spark MLlib et MongoDB.
+Mini-projet du module Big Data (ENSI, II3). Une chaîne complète de stockage, de traitement et d'interrogation de 568 454 avis clients Amazon, construite avec HDFS, MapReduce, Spark, Spark MLlib et MongoDB, complétée par un tableau de bord Streamlit.
 
 ## Présentation
 
@@ -35,6 +35,8 @@ Reviews.csv ──► HDFS (brut) ──► Spark : nettoyage ──► HDFS (Pa
               └───────────────────────┴───────────────────┘
                                       ▼
                          MongoDB (avis enrichis + index inversé)
+                                      ▼
+                              Tableau de bord Streamlit
 ```
 
 Le traitement est exclusivement par lots : le jeu de données est un fichier historique, chargé directement dans HDFS. Une collecte continue avec un traitement en temps réel serait une extension naturelle si les avis arrivaient en flux.
@@ -48,10 +50,11 @@ Le traitement est exclusivement par lots : le jeu de données est un fichier his
 | Spark | Nettoyage, analyses, index inversé | Étapes enchaînées en mémoire, code court, DataFrames |
 | Spark MLlib | Classification du sentiment | Entraînement itératif sur des données conservées en mémoire |
 | MongoDB | Stockage final et requêtes | Un avis est un document JSON semi-structuré ; recherche rapide par produit et par mot |
+| Streamlit | Visualisation | Interface web légère qui lit directement la base MongoDB |
 
 ### Environnement
 
-Image Docker `liliasfaxi/spark-hadoop:hv-2.7.2` (Hadoop 2.7.2, Spark 2.2.0, Python 3.5.2), avec un nœud maître et deux nœuds esclaves, plus un conteneur `mongo:7`.
+Image Docker `liliasfaxi/spark-hadoop:hv-2.7.2` (Hadoop 2.7.2, Spark 2.2.0, Python 3.5.2), avec un nœud maître et deux nœuds esclaves, plus un conteneur `mongo:7`. Le tableau de bord s'exécute sur la machine hôte avec un Python récent (3.9 ou plus).
 
 ## Fonctionnement du pipeline
 
@@ -67,6 +70,7 @@ Image Docker `liliasfaxi/spark-hadoop:hv-2.7.2` (Hadoop 2.7.2, Spark 2.2.0, Pyth
 | 8. Modèle | `04_ml.py` | TF-IDF (10 000 mots, présents dans au moins 5 avis) puis régression logistique à classes pondérées, découpe 80/20 | `predictions` (Parquet) |
 | 9. Export | `05_export.py` | Joint les avis nettoyés et les prédictions, écrit du JSON | `export_json` |
 | 10. Stockage final | `mongoimport` | Charge les deux collections dans MongoDB | base `avis` |
+| 11. Visualisation | `dashboard/app.py` | Affiche les résultats depuis MongoDB | page web locale |
 
 ### Le modèle de sentiment
 
@@ -132,6 +136,26 @@ Une nouvelle exécution donne des valeurs très proches (AUC 0,9542, rappel 0,88
 - Prédictions : 112 288 négatifs, 412 280 positifs, 42 550 sans prédiction.
 - Exemple : le produit `B000NMJWZO` compte 542 avis, avec une moyenne de 4,88.
 
+## Tableau de bord
+
+Une application Streamlit lit la base MongoDB et propose quatre onglets :
+
+| Onglet | Contenu |
+|---|---|
+| Vue d'ensemble | Nombre d'avis et de mots, répartition des notes, sentiment prédit |
+| Mots | Mots présents dans le plus d'avis, recherche par mot |
+| Produits | Produits les mieux notés, recherche par produit et avis négatifs détectés |
+| Modèle | AUC, rappel, précision et matrice de confusion |
+
+Installation et lancement, depuis la racine du dépôt :
+
+```
+pip install -r dashboard/requirements.txt
+streamlit run dashboard/app.py
+```
+
+L'application se connecte par défaut à `mongodb://127.0.0.1:27018`. Une autre adresse peut être indiquée avec la variable d'environnement `MONGO_URI`. Le tableau de bord s'ouvre à l'adresse `http://localhost:8501`.
+
 ## Limites et perspectives
 
 - Le jeu de données est modeste pour du Big Data (environ 300 Mo). L'architecture est conçue pour passer à l'échelle, mais l'avantage de Spark sur MapReduce n'est pas mesurable à cette taille.
@@ -150,6 +174,7 @@ scripts/      00_count.py  01_clean.py  01b_compact.py  01c_stats.py
 mapreduce/    mapper.py  reducer.py
 mongo/        queries.js
 demo/         demo.sh  04_ml_demo.py
+dashboard/    app.py  requirements.txt
 docs/         log_simple.txt  log_combiner.txt
 ```
 
@@ -228,7 +253,7 @@ Le script `04_ml.py` accepte une fraction des données en argument (par exemple 
 Sur la machine hôte :
 
 ```
-docker run -d --name mongo-avis -p 27017:27017 mongo:7
+docker run -d --name mongo-avis -p 27018:27017 mongo:7
 docker cp hadoop-master:/root/reviews.json reviews.json
 docker cp hadoop-master:/root/inverted.json inverted.json
 docker cp reviews.json mongo-avis:/tmp/reviews.json
@@ -239,6 +264,8 @@ docker exec -i mongo-avis mongosh --quiet < mongo/queries.js
 ```
 
 Le fichier `mongo/queries.js` crée les index et lance les requêtes de démonstration : nombre de documents, recherche par mot, statistiques d'un produit, répartition des prédictions, avis négatifs prédits.
+
+Si un autre MongoDB occupe déjà le port choisi sur la machine hôte, publier le conteneur sur un autre port (par exemple `-p 27019:27017`) et l'indiquer au tableau de bord avec `MONGO_URI`.
 
 ## Démonstration
 
